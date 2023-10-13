@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "update task set finished=? where id=? and userid=? and delete_time is null",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "00e0fdfd12371668d310fa48f4d21c849b01b04da9f50288e326bc5008793ec0"
+}

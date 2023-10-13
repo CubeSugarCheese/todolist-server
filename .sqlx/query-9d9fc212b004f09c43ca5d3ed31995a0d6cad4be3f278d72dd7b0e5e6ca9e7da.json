@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "insert into task (userid,title,content,start_time,end_time) values (?,?,?,?,?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "9d9fc212b004f09c43ca5d3ed31995a0d6cad4be3f278d72dd7b0e5e6ca9e7da"
+}
