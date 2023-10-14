@@ -184,11 +184,23 @@ pub struct GetMultipleTaskPayload {
 }
 
 impl GetMultipleTaskPayload {
-    pub const fn to_rpc_req(self, userid: i64) -> QueryMulitpleTaskRequest {
+    pub fn to_rpc_req(self, userid: i64) -> QueryMulitpleTaskRequest {
+        // page 最小为 0
+        // page_size 最大 100，最小 1
+        let page = self.page.map(|page| if page < 0 { 0 } else { page });
+        let page_size = self.page_size.map(|size| {
+            if size > 100 {
+                100
+            } else if size < 1 {
+                1
+            } else {
+                size
+            }
+        });
         QueryMulitpleTaskRequest {
             userid,
-            page: self.page,
-            page_size: self.page_size,
+            page,
+            page_size,
         }
     }
 }
