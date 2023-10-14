@@ -3,6 +3,9 @@ entries:
     protocol: thrift
     filename: volo_gen.rs
     idls:
-    - source: local
-      path: .\idl\include.thrift
-      keep_unknown_fields: false
+      - source: local
+        path: .\idl\user.thrift
+        keep_unknown_fields: false
+      - source: local
+        path: .\idl\task.thrift
+        keep_unknown_fields: false
