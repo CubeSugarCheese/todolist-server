@@ -3,11 +3,12 @@ pub mod model;
 
 use self::error::{AddUserError, LoginError};
 use self::model::{TaskRow, UserRow};
-use chrono::Local;
+use chrono::Utc;
 use sqlx::mysql::MySqlPoolOptions;
 use sqlx::{MySql, Pool};
 use tokio::sync::OnceCell;
 use volo_gen::model::{Task, User};
+use crate::util::{CHRONO_SQL_FORMAT};
 
 pub struct DATABASE {
     instance: Pool<MySql>,
@@ -103,7 +104,7 @@ impl DATABASE {
     pub async fn delete_task(&self, task_id: i64, user_id: i64) -> Result<(), sqlx::Error> {
         sqlx::query!(
             "update task set delete_time=? where id=? and userid=? and delete_time is null",
-            Local::now().timestamp(),
+            Utc::now().format(CHRONO_SQL_FORMAT).to_string(),
             task_id,
             user_id
         )
@@ -113,7 +114,6 @@ impl DATABASE {
     }
 
     pub async fn get_task(&self, task_id: i64, user_id: i64) -> Result<Option<Task>, sqlx::Error> {
-        tracing::debug!("get task, task_id: {task_id}, user_id: {user_id}");
         let row = sqlx::query_as!(
             TaskRow,
             "select * from task where id=? and userid=? and delete_time is null",
@@ -132,7 +132,6 @@ impl DATABASE {
         page: i64,
         size: i64,
     ) -> Result<Vec<Task>, sqlx::Error> {
-        tracing::debug!("get task, user_id: {user_id}, page: {page}, size: {size}");
         let rows = sqlx::query_as!(
             TaskRow,
 r#"select * from task where userid=? and delete_time is null
