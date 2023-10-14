@@ -1,4 +1,4 @@
-use crate::client::router::error::ApiError;
+use crate::http_server::router::error::ApiError;
 use axum::extract::FromRequestParts;
 use axum::headers::authorization::Bearer;
 use axum::headers::Authorization;

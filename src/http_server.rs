@@ -6,14 +6,14 @@ pub mod router;
 
 static USER_SERVICE_CLIENT: Lazy<volo_gen::user::UserServiceClient> = Lazy::new(|| {
     let addr: SocketAddr = "[::1]:8080".parse().unwrap();
-    volo_gen::user::UserServiceClientBuilder::new("todolist-server")
+    volo_gen::user::UserServiceClientBuilder::new("todolist-rpc_server")
         .address(addr)
         .build()
 });
 
 static TASK_SERVICE_CLIENT: Lazy<volo_gen::task::TaskServiceClient> = Lazy::new(|| {
     let addr: SocketAddr = "[::1]:8081".parse().unwrap();
-    volo_gen::task::TaskServiceClientBuilder::new("todolist-server")
+    volo_gen::task::TaskServiceClientBuilder::new("todolist-rpc_server")
         .address(addr)
         .build()
 });

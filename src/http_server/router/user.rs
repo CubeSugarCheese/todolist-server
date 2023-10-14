@@ -1,8 +1,8 @@
-use crate::client::model::{LoginData, LoginPayload, RegisterData, RegisterPayload};
-use crate::client::router::error::ApiError;
-use crate::client::router::jwt::{Claims, KEYS};
-use crate::client::router::{ok, ApiResult};
-use crate::client::USER_SERVICE_CLIENT;
+use crate::http_server::model::{LoginData, LoginPayload, RegisterData, RegisterPayload};
+use crate::http_server::router::error::ApiError;
+use crate::http_server::router::jwt::{Claims, KEYS};
+use crate::http_server::router::{ok, ApiResult};
+use crate::http_server::USER_SERVICE_CLIENT;
 use axum::Json;
 use chrono::Months;
 use jsonwebtoken::Header;

@@ -13,7 +13,7 @@ pub enum ApiError {
     #[error("you have not permission to access this request")]
     PermissionDeny,
     #[error("internal error: {0}")]
-    InternalServerError(String)
+    InternalServerError(String),
 }
 
 impl ApiError {
@@ -22,7 +22,7 @@ impl ApiError {
             ApiError::RequireLogin => StatusCode::UNAUTHORIZED,
             ApiError::InvalidToken => StatusCode::FORBIDDEN,
             ApiError::PermissionDeny => StatusCode::FORBIDDEN,
-            ApiError::InternalServerError(_) => StatusCode::INTERNAL_SERVER_ERROR
+            ApiError::InternalServerError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
@@ -31,7 +31,8 @@ impl ApiError {
         json!({
             "msg": error_msg,
             "data": {}
-        }).to_string()
+        })
+        .to_string()
     }
 }
 
@@ -40,7 +41,7 @@ impl IntoResponse for ApiError {
         let body = body::boxed(body::Full::from(self.to_json_string()));
         Response::builder()
             .status(self.status_code())
-            .header("content-type","application/json")
+            .header("content-type", "application/json")
             .body(body)
             .unwrap()
     }

@@ -2,9 +2,9 @@
 
 use dotenv::dotenv;
 use std::net::SocketAddr;
-use todolist_server::server::db::{DATABASE, DB};
-use todolist_server::server::layer::LogLayer;
-use todolist_server::server::S;
+use todolist_server::rpc_server::db::{DATABASE, DB};
+use todolist_server::rpc_server::handler::S;
+use todolist_server::rpc_server::layer::LogLayer;
 
 async fn entry() -> anyhow::Result<()> {
     dotenv().ok();
@@ -41,6 +41,6 @@ async fn entry() -> anyhow::Result<()> {
 async fn main() {
     let result = entry().await;
     if let Err(e) = result {
-        tracing::error!("start server failed with: {e}")
+        tracing::error!("start rpc_server failed with: {e}")
     }
 }

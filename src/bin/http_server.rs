@@ -3,11 +3,11 @@ use axum::routing::{delete, get, patch, post};
 use axum::Router;
 use dotenv::dotenv;
 use std::net::SocketAddr;
-use todolist_server::client::router::jwt::auth_middleware;
-use todolist_server::client::router::task::{
+use todolist_server::http_server::router::jwt::auth_middleware;
+use todolist_server::http_server::router::task::{
     create_task, delete_task, get_multiple_task, get_task, update_task_status,
 };
-use todolist_server::client::router::user::{login, register};
+use todolist_server::http_server::router::user::{login, register};
 
 async fn entry() -> anyhow::Result<()> {
     dotenv().ok();
@@ -22,7 +22,10 @@ async fn entry() -> anyhow::Result<()> {
         .route("/user/register", post(register))
         .route("/user/login", post(login));
 
-    let addr: SocketAddr = std::env::var("HTTP_API_ADDR").expect("HTTP_API_ADDR muse be set").parse().unwrap();
+    let addr: SocketAddr = std::env::var("HTTP_API_ADDR")
+        .expect("HTTP_API_ADDR muse be set")
+        .parse()
+        .unwrap();
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
@@ -35,6 +38,6 @@ async fn entry() -> anyhow::Result<()> {
 async fn main() {
     let result = entry().await;
     if let Err(e) = result {
-        tracing::error!("run client failed with: {e}")
+        tracing::error!("run http_server failed with: {e}")
     }
 }

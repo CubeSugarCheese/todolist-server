@@ -1,5 +1,5 @@
 #![feature(impl_trait_in_assoc_type)]
 
-pub mod client;
-pub mod server;
+pub mod http_server;
+pub mod rpc_server;
 pub mod util;

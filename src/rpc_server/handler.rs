@@ -1,4 +1,4 @@
-use self::db::DB;
+use crate::rpc_server::db::DB;
 use volo_gen::model::StatusFragment;
 use volo_gen::task::{
     CreateTaskRequest, CreateTaskResponse, DeleteTaskRequest, DeleteTaskResponse,
@@ -7,9 +7,6 @@ use volo_gen::task::{
 };
 use volo_gen::user::{LoginResponse, RegisterResponse};
 use volo_thrift::AnyhowError;
-
-pub mod db;
-pub mod layer;
 
 pub struct S;
 

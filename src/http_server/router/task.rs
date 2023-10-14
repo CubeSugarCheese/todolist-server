@@ -1,11 +1,11 @@
-use crate::client::model::{
+use crate::http_server::model::{
     CreateTaskPayload, DeleteTaskPayload, GetMultipleTaskPayload, GetTaskPayload, TaskData,
     UpdateTaskStatusPayload,
 };
-use crate::client::router::error::ApiError;
-use crate::client::router::jwt::Claims;
-use crate::client::router::{ok, ApiResult};
-use crate::client::TASK_SERVICE_CLIENT;
+use crate::http_server::router::error::ApiError;
+use crate::http_server::router::jwt::Claims;
+use crate::http_server::router::{ok, ApiResult};
+use crate::http_server::TASK_SERVICE_CLIENT;
 use axum::Json;
 
 pub async fn create_task(
@@ -73,11 +73,7 @@ pub async fn get_multiple_task(
         .await
         .unwrap();
     match resp.status.code {
-        200 => ok(resp
-            .data
-            .iter()
-            .map(|it| it.clone().into())
-            .collect()),
+        200 => ok(resp.data.iter().map(|it| it.clone().into()).collect()),
         500 => Err(ApiError::InternalServerError(resp.status.msg.into_string())),
         code => unreachable!("unknown rpc api status code: {}", code),
     }

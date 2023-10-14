@@ -1,5 +1,5 @@
-use crate::client::model::ApiResponse;
-use crate::client::router::error::ApiError;
+use crate::http_server::model::ApiResponse;
+use crate::http_server::router::error::ApiError;
 use axum::Json;
 use serde::Serialize;
 
