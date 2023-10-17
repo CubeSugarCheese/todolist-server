@@ -3,12 +3,12 @@ pub mod model;
 
 use self::error::{AddUserError, LoginError};
 use self::model::{TaskRow, UserRow};
+use crate::util::CHRONO_SQL_FORMAT;
 use chrono::Utc;
 use sqlx::mysql::MySqlPoolOptions;
 use sqlx::{MySql, Pool};
 use tokio::sync::OnceCell;
 use volo_gen::model::{Task, User};
-use crate::util::{CHRONO_SQL_FORMAT};
 
 pub struct DATABASE {
     pool: Pool<MySql>,
@@ -17,7 +17,7 @@ pub struct DATABASE {
 impl DATABASE {
     pub async fn new(url: &str) -> Result<DATABASE, sqlx::Error> {
         let instance = MySqlPoolOptions::new()
-            .max_connections(1)
+            .max_connections(5)
             .connect(url) //
             .await?;
         Ok(DATABASE { pool: instance })
@@ -32,16 +32,18 @@ impl DATABASE {
             return Err(AddUserError::AlreadyHaveSameName);
         }
 
+        let mut tx = self.pool.begin().await?;
         sqlx::query!(
             "insert into user (username, password) values (?, ?)",
             username,
             password
         )
-        .execute(&self.pool)
+        .execute(&mut *tx)
         .await?;
         let row = sqlx::query_as!(UserRow, "select * from user where id=last_insert_id()")
-            .fetch_one(&self.pool)
+            .fetch_one(&mut *tx)
             .await?;
+        tx.commit().await?;
         Ok(row.into())
     }
 
@@ -68,6 +70,7 @@ impl DATABASE {
         start_time: &str,
         end_time: Option<&str>,
     ) -> Result<Task, sqlx::Error> {
+        let mut tx = self.pool.begin().await?;
         sqlx::query!(
             "insert into task (userid,title,content,start_time,end_time) values (?,?,?,?,?)",
             userid,
@@ -76,11 +79,12 @@ impl DATABASE {
             start_time,
             end_time
         )
-        .execute(&self.pool)
+        .execute(&mut *tx)
         .await?;
         let row = sqlx::query_as!(TaskRow, "select * from task where id=last_insert_id()")
-            .fetch_one(&self.pool)
+            .fetch_one(&mut *tx)
             .await?;
+        tx.commit().await?;
         Ok(row.into())
     }
 
@@ -134,7 +138,7 @@ impl DATABASE {
     ) -> Result<Vec<Task>, sqlx::Error> {
         let rows = sqlx::query_as!(
             TaskRow,
-r#"select * from task where userid=? and delete_time is null
+            r#"select * from task where userid=? and delete_time is null
 order by id
 limit ?,?"#,
             user_id,
