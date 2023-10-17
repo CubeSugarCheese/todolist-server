@@ -27,14 +27,57 @@ git update-index --skip-worktree .env
 
 ## 项目结构
 ```
-sqlx：sqlx 的声明文件，用于在离线模式下构建项目时提供 sql 语法检查
-idl: thrift 声明文件
-src/bin: 二进制入口
-src/http_server: HTTP 服务器的具体实现
-src/rpc_server: RPC 服务器的具体实现
-src/util.rs 一些零散的小工具
-volo-gen: 由 volo-cli 生成的 crate，不应该手动修改
-.env: 应用运行时的环境变量
-init.sql: 初始化测试数据库使用的 sql
-rust-toolchain.toml: 指定 rust 使用 nightly 版本，以启用 volo 所需的 impl_trait_in_assoc_type 特性
+│  .env: 应用运行时的环境变量
+│  .gitignore
+│  Cargo.toml
+│  init.sql: 初始化测试数据库使用的 sql
+│  LICENSE
+│  README.md
+│  rust-toolchain.toml: 指定 rust 使用 nightly 版本，以启用 volo 所需的 impl_trait_in_assoc_type 特性
+│  volo.yml
+│                          
+├─.sqlx: sqlx 的声明文件，用于在离线模式下构建项目时提供 sql 语法检查
+│      
+├─idl: thrift 声明文件
+│      model.thrift
+│      task.thrift
+│      user.thrift
+│      
+├─src
+│  │  lib.rs
+│  │  http_server.rs
+│  │  rpc_server.rs
+│  │  util.rs: 一些零散的小工具
+│  │  
+│  ├─bin: 二进制入口
+│  │      http_server.rs
+│  │      task_service.rs
+│  │      user_service.rs
+│  │      
+│  ├─http_server: HTTP 服务器的具体实现
+│  │  │  model.rs
+│  │  │  router.rs
+│  │  │  
+│  │  └─router RPC 服务器的具体实现
+│  │          error.rs
+│  │          jwt.rs
+│  │          task.rs
+│  │          user.rs
+│  │          
+│  └─rpc_server
+│      │  db.rs
+│      │  handler.rs
+│      │  layer.rs
+│      │  
+│      └─db
+│              error.rs
+│              model.rs
+│              
+└─volo-gen 由 volo-cli 生成的 crate，不应该手动修改
+    │  build.rs
+    │  Cargo.toml
+    │  volo.yml
+    │  
+    └─src
+            lib.rs
 ```
