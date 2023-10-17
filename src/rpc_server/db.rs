@@ -11,7 +11,7 @@ use volo_gen::model::{Task, User};
 use crate::util::{CHRONO_SQL_FORMAT};
 
 pub struct DATABASE {
-    instance: Pool<MySql>,
+    pool: Pool<MySql>,
 }
 
 impl DATABASE {
@@ -20,12 +20,12 @@ impl DATABASE {
             .max_connections(1)
             .connect(url) //
             .await?;
-        Ok(DATABASE { instance })
+        Ok(DATABASE { pool: instance })
     }
 
     pub async fn add_user(&self, username: &str, password: &str) -> Result<User, AddUserError> {
         let result = sqlx::query!("select * from user where username=?", username)
-            .fetch_optional(&self.instance)
+            .fetch_optional(&self.pool)
             .await?;
         if result.is_some() {
             tracing::info!("exist same name user!");
@@ -37,10 +37,10 @@ impl DATABASE {
             username,
             password
         )
-        .execute(&self.instance)
+        .execute(&self.pool)
         .await?;
         let row = sqlx::query_as!(UserRow, "select * from user where id=last_insert_id()")
-            .fetch_one(&self.instance)
+            .fetch_one(&self.pool)
             .await?;
         Ok(row.into())
     }
@@ -52,7 +52,7 @@ impl DATABASE {
             username,
             password
         )
-        .fetch_optional(&self.instance)
+        .fetch_optional(&self.pool)
         .await?;
         match result {
             Some(row) => Ok(row.into()),
@@ -76,10 +76,10 @@ impl DATABASE {
             start_time,
             end_time
         )
-        .execute(&self.instance)
+        .execute(&self.pool)
         .await?;
         let row = sqlx::query_as!(TaskRow, "select * from task where id=last_insert_id()")
-            .fetch_one(&self.instance)
+            .fetch_one(&self.pool)
             .await?;
         Ok(row.into())
     }
@@ -96,7 +96,7 @@ impl DATABASE {
             task_id,
             userid
         )
-        .execute(&self.instance)
+        .execute(&self.pool)
         .await?;
         Ok(())
     }
@@ -108,7 +108,7 @@ impl DATABASE {
             task_id,
             user_id
         )
-        .execute(&self.instance)
+        .execute(&self.pool)
         .await?;
         Ok(())
     }
@@ -120,7 +120,7 @@ impl DATABASE {
             task_id,
             user_id
         )
-        .fetch_optional(&self.instance)
+        .fetch_optional(&self.pool)
         .await?;
 
         Ok(row.map(|it| it.into()))
@@ -141,7 +141,7 @@ limit ?,?"#,
             page * size,
             size
         )
-        .fetch_all(&self.instance)
+        .fetch_all(&self.pool)
         .await?;
 
         let tasks: Vec<Task> = rows.iter().map(|it| it.clone().into()).collect();
