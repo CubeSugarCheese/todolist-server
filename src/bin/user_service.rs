@@ -7,7 +7,7 @@ use todolist_server::rpc_server::handler::S;
 use todolist_server::rpc_server::layer::LogLayer;
 
 async fn entry() -> anyhow::Result<()> {
-    dotenv().ok();
+    dotenv()?;
     tracing_subscriber::fmt::init();
     let result = DB.set(DATABASE::new(&std::env::var("DATABASE_URL")?).await?);
     if let Err(e) = result {
@@ -19,21 +19,10 @@ async fn entry() -> anyhow::Result<()> {
         .parse()?;
     let user_service_addr = volo::net::Address::from(user_service_addr);
 
-    tokio::spawn(
-        volo_gen::user::UserServiceServer::new(S)
-            .layer(LogLayer)
-            .run(user_service_addr),
-    );
-
-    let task_service_addr: SocketAddr = std::env::var("RPC_TASK_SERVICE_ADDR")
-        .expect("RPC_TASK_SERVICE_ADDR muse be set")
-        .parse()?;
-    let task_service_addr = volo::net::Address::from(task_service_addr);
-    volo_gen::task::TaskServiceServer::new(S)
+    volo_gen::user::UserServiceServer::new(S)
         .layer(LogLayer)
-        .run(task_service_addr)
-        .await
-        .unwrap();
+        .run(user_service_addr)
+        .await.unwrap();
     Ok(())
 }
 
